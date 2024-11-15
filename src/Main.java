@@ -8,6 +8,12 @@ class Transaction {
     double unitPrice;
     int unitsSold;
 
+    public Transaction(String transactionDate, String productCode, double unitPrice, int unitsSold) {
+        this.transactionDate = transactionDate;
+        this.productCode = productCode;
+        this.unitPrice = unitPrice;
+        this.unitsSold = unitsSold;
+    }
 }
 
 public class Main {
