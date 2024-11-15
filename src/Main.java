@@ -45,9 +45,26 @@ public class Main {
         return totalRevenue;
     }
 
+    public static Map<String, Double> calculateMonthlyRevenue(List<Transaction> records) {
+        Map<String, Double> revenueByMonth = new HashMap<>();
+        for (Transaction record : records) {
+            String month = record.transactionDate.substring(0, 7);
+            double saleAmount = record.unitsSold * record.unitPrice;
+            revenueByMonth.put(month, revenueByMonth.getOrDefault(month, 0.0) + saleAmount);
+        }
+        return revenueByMonth;
+    }
+
     public static void main(String[] args) {
         List<Transaction> records = loadData("data.txt");
+
         double totalRevenue = calculateTotalRevenue(records);
         System.out.println("Total Store Revenue: " + totalRevenue);
+
+        Map<String, Double> monthlyRevenue = calculateMonthlyRevenue(records);
+        System.out.println("\nMonthly Revenue Breakdown:");
+        for (Map.Entry<String, Double> entry : monthlyRevenue.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
     }
 }
