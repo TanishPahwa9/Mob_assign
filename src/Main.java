@@ -37,10 +37,17 @@ public class Main {
 
 
 }
+    public static double calculateTotalRevenue(List<Transaction> records) {
+        double totalRevenue = 0;
+        for (Transaction record : records) {
+            totalRevenue += record.unitsSold * record.unitPrice;
+        }
+        return totalRevenue;
+    }
 
     public static void main(String[] args) {
-
         List<Transaction> records = loadData("data.txt");
-
+        double totalRevenue = calculateTotalRevenue(records);
+        System.out.println("Total Store Revenue: " + totalRevenue);
     }
 }
