@@ -15,7 +15,6 @@ class Transaction {
         this.unitsSold = unitsSold;
     }
 }
-
 public class Main {
 
     public static List<Transaction> loadData(String filePath) {
@@ -34,8 +33,6 @@ public class Main {
             System.out.println("Error while reading the file: " + e.getMessage());
         }
         return records;
-
-
 }
     public static double calculateTotalRevenue(List<Transaction> records) {
         double totalRevenue = 0;
@@ -102,6 +99,34 @@ public class Main {
         }
         return topRevenueItemsByMonth;
     }
+    public static void displayOrderStatistics(List<Transaction> records, Map<String, String> topItems) {
+        Map<String, Map<String, List<Integer>>> orderStats = new HashMap<>();
+        for (Transaction record : records) {
+            String month = record.transactionDate.substring(0, 7);
+            orderStats.computeIfAbsent(month, k -> new HashMap<>())
+                    .computeIfAbsent(record.productCode, k -> new ArrayList<>()).add(record.unitsSold);
+        }
+
+        System.out.println("\nOrder Statistics for Top-Selling Items:");
+        for (Map.Entry<String, String> monthItem : topItems.entrySet()) {
+            String month = monthItem.getKey();
+            String topProduct = monthItem.getValue();
+            List<Integer> quantities = orderStats.get(month).get(topProduct);
+            int minOrder = Integer.MAX_VALUE, maxOrder = 0, totalOrders = 0;
+
+            for (int qty : quantities) {
+                minOrder = Math.min(minOrder, qty);
+                maxOrder = Math.max(maxOrder, qty);
+                totalOrders += qty;
+            }
+
+            double avgOrder = quantities.isEmpty() ? 0 : (double) totalOrders / quantities.size();
+            System.out.println(month + " " + topProduct +
+                    ", Min Order: " + minOrder +
+                    ", Max Order: " + maxOrder +
+                    ", Avg Order: " + String.format("%.2f", avgOrder));
+        }
+    }
     public static void main(String[] args) {
         List<Transaction> records = loadData("data.txt");
 
@@ -124,4 +149,6 @@ public class Main {
         for (Map.Entry<String, String> entry : topRevenueItems.entrySet()) {
         System.out.println(entry.getKey() + ": Product: " + entry.getValue());
     }
-}}
+        displayOrderStatistics(records, topItems);
+}
+}
