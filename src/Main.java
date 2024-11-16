@@ -54,6 +54,29 @@ public class Main {
         }
         return revenueByMonth;
     }
+    public static Map<String, String> findTopSellingItems(List<Transaction> records) {
+        Map<String, Map<String, Integer>> itemQuantitiesByMonth = new HashMap<>();
+        for (Transaction record : records) {
+            String month = record.transactionDate.substring(0, 7);
+            itemQuantitiesByMonth.computeIfAbsent(month, k -> new HashMap<>())
+                    .put(record.productCode, itemQuantitiesByMonth.get(month).getOrDefault(record.productCode, 0) + record.unitsSold);
+        }
+
+        Map<String, String> topItemsByMonth = new HashMap<>();
+        for (Map.Entry<String, Map<String, Integer>> monthData : itemQuantitiesByMonth.entrySet()) {
+            String month = monthData.getKey();
+            String topItem = "";
+            int maxQuantity = 0;
+            for (Map.Entry<String, Integer> itemData : monthData.getValue().entrySet()) {
+                if (itemData.getValue() > maxQuantity) {
+                    maxQuantity = itemData.getValue();
+                    topItem = itemData.getKey();
+                }
+            }
+            topItemsByMonth.put(month, topItem);
+        }
+        return topItemsByMonth;
+    }
 
     public static void main(String[] args) {
         List<Transaction> records = loadData("data.txt");
@@ -65,6 +88,11 @@ public class Main {
         System.out.println("\nMonthly Revenue Breakdown:");
         for (Map.Entry<String, Double> entry : monthlyRevenue.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        Map<String, String> topItems = findTopSellingItems(records);
+        System.out.println("\nTop-Selling Items Each Month:");
+        for (Map.Entry<String, String> entry : topItems.entrySet()) {
+            System.out.println(entry.getKey() + ": Product: " + entry.getValue());
         }
     }
 }
